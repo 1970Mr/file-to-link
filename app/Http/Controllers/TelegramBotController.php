@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\TelegramUpdate;
 use App\Services\File\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Telegram\Bot\Api;
 use Telegram\Bot\Exceptions\TelegramSDKException;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramBotController extends Controller
 {
@@ -22,20 +24,19 @@ class TelegramBotController extends Controller
      */
     public function handle(Request $request): void
     {
-        $telegramUpdateModel = TelegramUpdate::query()->create(['request' => $request->all()]);
-
         $update = $this->telegram->getWebhookUpdate();
 
         if (!$update->has('message')) {
             return;
         }
 
+        $telegramUpdateModel = TelegramUpdate::query()->create(['request' => $request->all()]);
+
         $message = $update->getMessage();
 
         if ($message->has('document')) {
             $fileId = $message->getDocument()->getFileId();
-            $file = $this->telegram->getFile(['file_id' => $fileId]);
-            $filePath = $file->getFilePath();
+            $fileName = $message->getDocument()->getFileName();
 
             // Check if file size exceeds 500 MB
             $fileSize = $message->getDocument()->getFileSize();
@@ -47,12 +48,11 @@ class TelegramBotController extends Controller
                 return;
             }
 
-            $fileUrl = "https://api.telegram.org/file/bot" . config('services.telegram.bot_token') . "/" . $filePath;
-            $link = $this->fileService->saveFile($telegramUpdateModel, $fileUrl, $message->getDocument()->getFileName());
+            $link = $this->fileService->saveFile($telegramUpdateModel, $fileId, $fileName);
 
             $this->telegram->sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => "Your file link: " . $link,
+                'text' => "Your file link: " . $link . PHP_EOL . 'This link will be available in one hour.',
             ]);
         } else {
             $this->telegram->sendMessage([
