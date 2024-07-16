@@ -37,5 +37,7 @@ return [
 
     'telegram' => [
         'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'max_file_size' => env('TELEGRAM_MAX_FILE_SIZE', 500 * 1024 * 1024),
+        'file_expire_time' => now()->addHour(),
     ],
 ];

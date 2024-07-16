@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Support\Telegram\TelegramHandler;
-use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Http\Request;
 
 class TelegramBotController extends Controller
 {

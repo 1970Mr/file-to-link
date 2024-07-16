@@ -4,7 +4,6 @@ namespace App\Support\Telegram;
 
 use App\Exceptions\NoMessageException;
 use App\Models\TelegramUpdate;
-use App\Services\File\File;
 use App\Support\Telegram\Handlers\DocumentHandler;
 use App\Support\Telegram\Handlers\FileSaveHandler;
 use App\Support\Telegram\Handlers\FileSizeHandler;

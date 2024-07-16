@@ -14,8 +14,10 @@ class DocumentHandler extends Handler
 
     public function handle(Update $update, TelegramUpdate $telegramUpdate): void
     {
+        $message = $update->getMessage();
+        $chatId = $update->getMessage()->getChat()->getId();
+
         try {
-            $message = $update->getMessage();
             if (!$message->has('document')) {
                 throw new NotDocumentException();
             }
@@ -23,7 +25,7 @@ class DocumentHandler extends Handler
             $this->next($update, $telegramUpdate);
         } catch (NotDocumentException $e) {
             $this->telegram->sendMessage([
-                'chat_id' => $update->getMessage()->getChat()->getId(),
+                'chat_id' => $chatId,
                 'text' => "Please send a document.",
             ]);
         }

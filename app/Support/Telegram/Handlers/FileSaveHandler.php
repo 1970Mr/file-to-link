@@ -20,26 +20,28 @@ class FileSaveHandler extends Handler
     public function handle(Update $update, TelegramUpdate $telegramUpdate): void
     {
         $message = $update->getMessage();
-        $fileId = $message->getDocument()->getFileId();
-        $fileName = $message->getDocument()->getFileName();
+        $document = $message->getDocument();
+        $fileId = $document->getFileId();
+        $fileName = $document->getFileName();
+        $chatId = $message->getChat()->getId();
 
         try {
             $link = $this->fileService->saveFile($telegramUpdate, $fileId, $fileName);
 
             $this->telegram->sendMessage([
-                'chat_id' => $message->getChat()->getId(),
+                'chat_id' => $chatId,
                 'text' => "Your file link: " . $link . PHP_EOL . 'This link will be available in one hour.',
             ]);
 
             $this->next($update, $telegramUpdate);
         } catch (FileDoesNotExist $e) {
             $this->telegram->sendMessage([
-                'chat_id' => $message->getChat()->getId(),
+                'chat_id' => $chatId,
                 'text' => "The file is not available",
             ]);
         } catch (FileIsTooBig $e) {
             $this->telegram->sendMessage([
-                'chat_id' => $message->getChat()->getId(),
+                'chat_id' => $chatId,
                 'text' => "The file size exceeds the maximum limit of 500 MB.",
             ]);
         }

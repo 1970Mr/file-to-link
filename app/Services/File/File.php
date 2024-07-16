@@ -25,7 +25,7 @@ class File
         file_put_contents($filePath, $fileContent);
 
         $telegramUpdate->addMedia($filePath)->toMediaCollection();
-        DeleteFile::dispatch($telegramUpdate)->delay(now()->addHour());
+        DeleteFile::dispatch($telegramUpdate)->delay(config('services.telegram.file_expire_time'));
         return $telegramUpdate->getFirstMediaUrl();
     }
 
