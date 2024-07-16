@@ -7,7 +7,6 @@ use App\Models\TelegramUpdate;
 use Illuminate\Support\Facades\Http;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
-use Telegram\Bot\Laravel\Facades\Telegram;
 
 class File
 {
@@ -19,9 +18,6 @@ class File
     {
         $token = config('services.telegram.bot_token');
         $filePath = $this->getFilePath($fileId, $token);
-        if (!$filePath) {
-            throw new FileDoesNotExist();
-        }
 
         $fileUrl = "https://api.telegram.org/file/bot{$token}/{$filePath}";
         $fileContent = Http::get($fileUrl)->body();
@@ -33,16 +29,20 @@ class File
         return $telegramUpdate->getFirstMediaUrl();
     }
 
-    private function getFilePath($fileId, $token): ?string
+    /**
+     * @throws FileDoesNotExist
+     */
+    private function getFilePath($fileId, $token): string
     {
         $response = Http::get("https://api.telegram.org/bot{$token}/getFile", [
             'file_id' => $fileId,
         ]);
         $result = $response->json();
-        if ($result['ok']) {
-            return $result['result']['file_path'];
+
+        if (!$result['ok']) {
+            throw new FileDoesNotExist();
         }
 
-        return null;
+        return $result['result']['file_path'];
     }
 }
