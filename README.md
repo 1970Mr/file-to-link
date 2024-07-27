@@ -56,9 +56,11 @@ This repository contains a simple Telegram bot implemented in PHP using the Lara
 
 ## Setting up the Webhook
 
-You need to set up a webhook for your Telegram bot to receive updates. There is a predefined route for setting the webhook.
+You need to set up a webhook for your Telegram bot to receive updates. There are two methods to set the webhook.
 
-1. **Set the webhook using the route:**
+### Method 1: Using the Route
+
+**Set the webhook using the route:**
 
    ```sh
    php artisan serve
@@ -70,7 +72,15 @@ You need to set up a webhook for your Telegram bot to receive updates. There is 
    http://localhost:8000/set-webhook/{your-telegram-bot-token}
    ```
 
-   If everything is set up correctly, you should see a message: "Webhook is set".
+   If everything is set up correctly, you should see a message: "Webhook is set successfully.".
+
+### Method 2: Using an Artisan Command
+
+**Set the webhook using an artisan command:**
+
+   ```sh
+   php artisan telegram:set-webhook
+   ```
 
 Your bot should now be up and running, ready to handle file uploads and provide downloadable links.
 

@@ -27,14 +27,19 @@ class SetTelegramWebhook extends Command
     public function handle(): void
     {
         $token = config('services.telegram.bot_token');
-        $url = config('app.url') . '/telegram/webhook';
+        $appUrl = config('app.url');
+        $webhookUrl = $appUrl . '/telegram/webhook';
 
         try {
             if (!$token) {
                 throw new \InvalidArgumentException('Telegram bot token is not set in the configuration.');
             }
 
-            $response = Telegram::setWebhook(['url' => $url]);
+            if (!$appUrl) {
+                throw new \InvalidArgumentException('App URL is not set in the configuration.');
+            }
+
+            $response = Telegram::setWebhook(['url' => $webhookUrl]);
             if (!$response) {
                 throw new \RuntimeException('Webhook setting failed!');
             }
